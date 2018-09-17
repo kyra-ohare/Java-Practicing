@@ -1,0 +1,2 @@
+SammysMotto
+javaprogramming.SammysMotto
