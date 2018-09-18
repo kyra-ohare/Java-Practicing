@@ -3,6 +3,7 @@
  */
 package javaprogramming.chapter12ExceptionHandling;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class GadgetOrderTaker {
@@ -14,7 +15,7 @@ public class GadgetOrderTaker {
             gadgets[2] = new Gadget(256, "Gerbil trimmer", 9.99);
             gadgets[3] = new Gadget(512, "Talking bookmark", 6.89);
         String name, address;
-        int orderNumber = 101, itemCode, quantity, counter = 0;
+        int orderNumber = 101, itemCode = 0, quantity = 0, counter = 0;
         double total = 0;
         Gadget[] list = new Gadget[4];
         Scanner input = new Scanner(System.in);
@@ -27,36 +28,58 @@ public class GadgetOrderTaker {
             System.out.print("Address >>>> ");
                 address = input.nextLine();
             System.out.println("**** Our Gadgets ****");
-            for(Gadget temp : gadgets) {
+            for(Gadget temp : gadgets) { //display the gadgets.
                 temp.display();
             }
-            do {
-                ++counter;
+            while(true) { //asks for the information until an exception happens
                 System.out.print("Item code (or 999 to finish your order) >>>> ");
+                try {    
                     itemCode = input.nextInt();
                     input.nextLine();
-                if(itemCode == 999)
-                    break;
-                System.out.print("Quantity >>>> ");
-                    quantity = input.nextInt();
-                    input.nextLine();
-                for(int j = 0; j < gadgets.length; ++j) {
-                    if(itemCode == gadgets[i].getItemNumber()) {
-                        if(list[i] != null) {
-                            list[i] = gadgets[i];
-                            total += (gadgets[i].getPrice() * quantity);
+                    if(itemCode == 999) {
+                        System.out.println("Bye " + name);
+                        break;
+                    }
+                    { //counts how many attempts to find an Item Number otherwise an exception is thrown
+                        int counter2 = 0;
+                        for(Gadget temp : gadgets) {
+                            if(itemCode != temp.getItemNumber())
+                                ++counter2;
+                            if(counter2 == gadgets.length)
+                                throw new OrderException("Item Code not valid!");
                         }
                     }
+                    System.out.print("Quantity >>>> ");
+                        quantity = input.nextInt();
+                        input.nextLine();
+                        
+                    if(counter == 4) //only 4 orders per person is possible
+                        throw new OrderException("You've reached your limit! Thanks for shopping with us.");
+                    else if(quantity > 100)
+                        throw new OrderException("You've ordered more than 100 of the same item");
+                        
+                    for(Gadget temp : gadgets) {
+                        if(itemCode == temp.getItemNumber()) {
+                            list[i] = temp;
+                            total += (temp.getPrice() * quantity);
+                        }
+                    }
+                    ++counter; //this counts the number of orders per person
+                } catch(InputMismatchException e) {
+                    System.out.println("ERROR: not a number!");
+                    input.next();
+                } catch(OrderException e) {
+                    System.out.println(e.getMessage());
+                    break;
                 }
-                //System.out.println("counter: " + counter);
-                //System.out.println("(itemCode != 999 || counter != 4)" + (itemCode != 999 || counter != 4));
-            } while(counter != 4);
-            counter = 0;
+            }
+            counter = 0; //counter is initializer for the next customer
             orders[i] = new Order(orderNumber, name, address, list, total, shippingHandlingFee(total));
         }
         
-        for(Order temp : orders) {
-            temp.display();
+        for(Order temp : orders) { //display the orders
+            if(temp != null)
+                temp.display();
         }
     }
     
