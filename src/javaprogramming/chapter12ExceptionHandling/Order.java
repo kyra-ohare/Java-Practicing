@@ -3,6 +3,8 @@
  */
 package javaprogramming.chapter12ExceptionHandling;
 
+import java.util.Arrays;
+
 public class Order {
     private int orderNumber;
     private String customerName;
@@ -33,6 +35,7 @@ public class Order {
     }
 
     public Gadget[] getList() {
+        
         return list;
     }
 
@@ -45,6 +48,11 @@ public class Order {
     }
     
     public void display() {
-        System.out.println("\nOrder Number: " + getOrderNumber() + " | Name: " + getCustomerName() + " | Address: " + getAddress() + "\n  Your Gadgets:\n" + list + "\nTotal Price: " + getTotalPrice() + " | Shipping & Handling Fee: " + getShippingHandlingFee());
+        System.out.println("\nOrder Number: " + getOrderNumber() + " | Name: " + getCustomerName() + " | Address: " + getAddress() + "\n  Your Gadgets:\n");
+        for(Gadget temp : getList()) {
+            if(temp != null)
+                temp.display();
+        }
+        System.out.println("\nTotal Price: " + getTotalPrice() + " | Shipping & Handling Fee: " + getShippingHandlingFee());
     }
 }
